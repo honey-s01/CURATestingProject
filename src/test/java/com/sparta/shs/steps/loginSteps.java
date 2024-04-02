@@ -22,8 +22,13 @@ import org.hamcrest.Matchers;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 
 import java.io.File;
+import java.io.IOException;
+
+import static com.sparta.shs.steps.Hooks.screenshot;
 
 public class loginSteps extends sharedSteps {
 
@@ -33,15 +38,14 @@ public class loginSteps extends sharedSteps {
     private LoginPage loginPage;
     protected static final Logger logger = Logger.getLogger(loginSteps.class.getName());
 
+//    private static ChromeDriverService service;
+
     public loginSteps(){
         homePage = new HomePage(driver);
         loginPage = new LoginPage(driver);
     }
 
-    @Before
-    public void before(){
-        getDriver();
-    }
+
 
     @Given("I am on the home page")
     public void iAmOnTheHomePage() {
@@ -57,8 +61,7 @@ public class loginSteps extends sharedSteps {
     }
 
     @Then("I should be on the login page")
-    public void iShouldBeOnTheLoginPage() throws InterruptedException {
-        screenshot(driver, System.currentTimeMillis());
+    public void iShouldBeOnTheLoginPage() {
         MatcherAssert.assertThat(getUrl(), Matchers.containsString("login"));
     }
 
@@ -79,39 +82,17 @@ public class loginSteps extends sharedSteps {
 
     @Then("I should be on the appointment making page")
     public void iShouldBeOnTheAppointmentMakingPage() {
-        screenshot(driver, System.currentTimeMillis());
         MatcherAssert.assertThat(getUrl(), Matchers.containsString("appointment"));
     }
 
     @Then("I should see a failed login message")
     public void iShouldSeeAFailedLoginMessage() {
-        screenshot(driver, System.currentTimeMillis());
         MatcherAssert.assertThat(loginPage.getFailedMessage(), Matchers.containsString("failed"));
     }
 
-    public static void screenshot(WebDriver driver, long ms){
-        try{
-            TakesScreenshot ts = (TakesScreenshot) driver;
-            File source = ts.getScreenshotAs(OutputType.FILE);
-            FileUtils.copyFile(source, new File("target/screenshots/" + ms + "_screenshot.png"));
-            logger.info("Screenshot Taken");
-        }
-        catch (Exception e){
-            System.out.println("Exception caught whilst taking a screenshot");
-        }
-    }
 
-    @After
-    public void after(){
-        driver.manage().deleteAllCookies();
-        driver.quit();
-//        driver = null;
-    }
 
-    @AfterAll
-    public static void teardown(){
-        driver.quit();
-    }
+
 
 
 }
